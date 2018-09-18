@@ -52,6 +52,12 @@
 		/** Instantiate Music and Sound. */
 		private var bgMusic: BGMusic = new BGMusic();
 		private var gameOverSound: GameOverSound = new GameOverSound();
+		
+		/** Increases speed of snowflakes when difficulty increases. */
+		private var difficultySpeed: int = 0;
+		
+		/** Checks for when the difficulty increases. */
+		private var increaseDifficulty: Boolean = false;
 
 		/**
 		 * This is where we setup the game.
@@ -129,6 +135,7 @@
 			if (delaySpawn <= 0) {
 				var s: Snow = new Snow();
 				addChild(s);
+				s.speed += difficultySpeed;
 				snowflakes.push(s);
 				delaySpawn = (int)(Math.random() * 10 + 10);
 			}
@@ -147,6 +154,14 @@
 
 				//Increases speed of snow every 1000 points.
 				increaseSpeedCheck();
+				
+				// If difficulty increases, increase speed.
+				if (increaseDifficulty == true){
+					difficultySpeed += 1;
+					snowflakes[i].speed += difficultySpeed;
+					targetScore += 1000;
+					increaseDifficulty = false;
+				}
 
 				if (snowflakes[i].isDead) {
 					// remove it!!
@@ -197,14 +212,13 @@
 			}
 		} // ends gameOverCheck
 
-		/** Increases snow speed every 1000 points. */
+		/** Sets boolean flag to true when it's time for the difficulty to increase. */
 		private function increaseSpeedCheck() {
 
 			for (var i = snowflakes.length - 1; i >= 0; i--) {
 
 				if (score >= targetScore) {
-					snowflakes[i].speed += .3;
-					targetScore += 1000;
+					increaseDifficulty = true;
 				}
 
 			}
@@ -250,6 +264,8 @@
 
 			missCount = 0;
 			score = 0;
+			difficultySpeed = 0;
+			increaseDifficulty = false;
 
 			gameOver.visible = false;
 			restart.visible = false;
